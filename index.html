@@ -1,9 +1,15 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#07111f">
+
+<!-- SkyPulse PWA configuration -->
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+
 <title>SkyPulse — Weather, at a glance.</title>
 
 <style>
@@ -101,14 +107,24 @@ svg{width:100%;height:230px}
 .chart-area{fill:var(--accent);opacity:.12}
 footer{text-align:center;color:var(--muted);font-size:13px;padding:15px}
 [hidden]{display:none!important}
-@media(max-width:850px){.grid{grid-template-columns:repeat(2,1fr)}.settings-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:850px){
+ .grid{grid-template-columns:repeat(2,1fr)}
+ .settings-grid{grid-template-columns:repeat(2,1fr)}
+}
 @media(max-width:600px){
- .app{width:92%}header{align-items:flex-start}.header-actions{flex-direction:column}
- .search form{flex-wrap:wrap}.search input{flex-basis:100%;width:100%}
- .search button{padding:11px 18px}.results{top:108px;right:0}
- .current{padding:19px}.current-top{flex-direction:column}
- .daynight{text-align:left}.weather-main{gap:10px}
- .weather-icon{font-size:60px}.temperature{font-size:65px}
+ .app{width:92%}
+ header{align-items:flex-start}
+ .header-actions{flex-direction:column}
+ .search form{flex-wrap:wrap}
+ .search input{flex-basis:100%;width:100%}
+ .search button{padding:11px 18px}
+ .results{top:108px;right:0}
+ .current{padding:19px}
+ .current-top{flex-direction:column}
+ .daynight{text-align:left}
+ .weather-main{gap:10px}
+ .weather-icon{font-size:60px}
+ .temperature{font-size:65px}
  .settings-grid{grid-template-columns:1fr}
 }
 </style>
@@ -868,11 +884,29 @@ $("rainChartBtn").addEventListener("click", () => {
 $("refreshBtn").addEventListener("click", loadWeather);
 $("closeMessage").addEventListener("click", hideMessage);
 
+/* Apply saved preferences and load initial weather. */
 applySettings();
 renderFavorites();
 loadWeather();
 
+/* Refresh weather data every 10 minutes while the app is running. */
 setInterval(loadWeather, 10 * 60 * 1000);
 </script>
+
+<!-- Register the service worker for PWA support. -->
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js")
+      .catch((error) => {
+        console.error(
+          "SkyPulse service worker registration failed:",
+          error
+        );
+      });
+  });
+}
+</script>
+
 </body>
 </html>
